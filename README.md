@@ -1,6 +1,6 @@
 # Insights Account Reports
 
-## NOTE: This script is not supported in any official capacity.
+**NOTE: This script is not supported in any official capacity.**
 
 This script gives Red Hat customers the ability to view information about their systems registered to Insights.  Currently there are only a couple of reports:
 
