@@ -1,10 +1,12 @@
 #!/usr/bin/env python2
 
+from datetime import datetime
 import argparse
 import json
 import requests
 import sys
 
+NOW = datetime.now()
 BASE_URL = "https://api.access.redhat.com/r/insights"
 
 class InsightsError(Exception):
@@ -73,6 +75,19 @@ def fetch_registration(creds, account=None):
     return systems
 
 
+def stale_test(d):
+    if d.get("unregistered_at") is not None:
+        return False
+    dt = datetime.strptime(d["last_check_in"], "%Y-%m-%dT%H:%M:%S.%fZ")
+    return (NOW - dt).days > 0
+
+
+def fetch_stale(creds, account=None):
+    systems = fetch_registration(creds, account)
+    filtered = [s for s in systems if stale_test(s)]
+    return sorted(filtered, key=lambda i: i["last_check_in"])
+
+
 def report_tsv(systems, fields):
     print("\t".join(fields))
     for system in systems:
@@ -93,7 +108,8 @@ def report_console(systems, fields):
 
 reports = {
     "registration": (fetch_registration, ("system_id", "hostname", "last_check_in", "created_at", "unregistered_at")),
-    "reports": (fetch_reports, ("system_id", "hostname", "rule_id"))
+    "reports": (fetch_reports, ("system_id", "hostname", "rule_id")),
+    "stale": (fetch_stale, ("system_id", "hostname", "last_check_in"))
 }
 
 if __name__ == "__main__":
