@@ -21,8 +21,10 @@ Example:
 ./insights_account_reports.py --username "" --password "" registration
 ```
 
-Or you can use a file to store your credentials:
+Or you can use a file to store your RHN credentials:
 
 ```
 ./insights_account_reports.py --creds-file userpass.txt reports
 ```
+
+The format of the text file is one line with `<username>:<password>`.
